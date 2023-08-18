@@ -28,20 +28,31 @@
 namespace GCode {class Move;}
 
 namespace CAMotics {
-  class Sweep {
+  class Sweep { // 曲面
   public:
     virtual ~Sweep() {} // Compiler needs this
-
+    // 取得当前曲面的外边框，同时指定z轴的长度和z轴偏移量。
+    // 求解后边框的结果为bboxes，radius为指定半径。
+    // start 和 end 为大致边框范围的起止点。
     void getBBoxes(const cb::Vector3D &start, const cb::Vector3D &end,
                    std::vector<cb::Rectangle3D> &bboxes, double radius,
                    double length, double zOffset,
                    double tolerance = 0.01) const;
 
+    // 取得当前曲面的外边框，不特殊对待z轴。
+    // 求解后边框的结果为bboxes。
+    // start 和 end 为大致边框范围的起止点。
+    // 该函数固定返回0.
     virtual void getBBoxes(const cb::Vector3D &start, const cb::Vector3D &end,
                            std::vector<cb::Rectangle3D> &bboxes,
                            double tolerance = 0.01) const = 0;
+    // 取得指定方向的矩形是否相交。
+    // 该函数固定返回 false。
     virtual bool intersects(const GCode::Move &move,
                             const cb::Rectangle3D &box) const {return false;}
+
+    // 取得深度。
+    // 该函数固定返回 0.
     virtual double depth(const cb::Vector3D &start, const cb::Vector3D &end,
                        const cb::Vector3D &p) const = 0;
   };

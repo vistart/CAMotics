@@ -24,7 +24,7 @@
 #include "Sweep.h"
 
 namespace CAMotics {
-  class ConicSweep : public Sweep {
+  class ConicSweep : public Sweep { // 圆锥曲面
     const double l;  // Length
     const double rt; // Radius 1
     const double rb; // Radius 1
