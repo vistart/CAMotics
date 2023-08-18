@@ -28,13 +28,13 @@ using namespace std;
 using namespace cb;
 using namespace CAMotics;
 
-
+// 实例化圆锥曲面。length为圆锥形高度，radius1为圆锥顶部半径，radius2为圆锥底部半径。若radius2=-1，则按radius1，即圆柱面。
 ConicSweep::ConicSweep(double length, double radius1, double radius2) :
   l(length), rt(radius1), rb(radius2 == -1 ? radius1 : radius2),
   Tm((rt - rb) / l) {
 }
 
-
+// 获得圆锥曲面的外边框。start为边框起点，end为边框终点。bboxes为一系列边框列表。tolerance为每次误差容忍值。
 void ConicSweep::getBBoxes(const Vector3D &start, const Vector3D &end,
                            vector<Rectangle3D> &bboxes,
                            double tolerance) const {
@@ -43,10 +43,10 @@ void ConicSweep::getBBoxes(const Vector3D &start, const Vector3D &end,
 
 
 namespace {
-  inline double sqr(double x) {return x * x;}
+  inline double sqr(double x) {return x * x;} // 计算平方
 }
 
-
+// 获取当前圆锥曲面的深度。
 double ConicSweep::depth(const Vector3D &A, const Vector3D &B,
                          const Vector3D &P) const {
   const double Ax = A.x(), Ay = A.y(), Az = A.z();

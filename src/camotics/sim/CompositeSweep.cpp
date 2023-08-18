@@ -26,13 +26,13 @@ using namespace std;
 using namespace cb;
 using namespace CAMotics;
 
-
+// 把子曲面和对应z轴偏移量加入到对应列表中。
 void CompositeSweep::add(const SmartPointer<Sweep> &sweep, double zOffset) {
   children.push_back(sweep);
   zOffsets.push_back(zOffset);
 }
 
-
+// 计算当前复杂曲面的包围盒。
 void CompositeSweep::getBBoxes(const Vector3D &start,
                                const Vector3D &end,
                                vector<Rectangle3D> &bboxes,
@@ -41,7 +41,7 @@ void CompositeSweep::getBBoxes(const Vector3D &start,
     children[i]->getBBoxes(start, end, bboxes, tolerance);
 }
 
-
+// 计算当前复杂曲面的深度。
 double CompositeSweep::depth(const Vector3D &start, const Vector3D &end,
                              const Vector3D &p) const {
   double d2 = -numeric_limits<double>::max();
@@ -49,8 +49,8 @@ double CompositeSweep::depth(const Vector3D &start, const Vector3D &end,
   for (unsigned i = 0; i < children.size(); i++) {
     double cd2 =
       children[i]->depth(start, end, p - Vector3D(0, 0, zOffsets[i]));
-    if (d2 < cd2) d2 = cd2;
+    if (d2 < cd2) d2 = cd2; // 深度取更大值。
   }
 
-  return d2;
+  return d2; // 最后返回每个子曲面的最大值。
 }

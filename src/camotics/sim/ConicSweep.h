@@ -25,13 +25,13 @@
 
 namespace CAMotics {
   class ConicSweep : public Sweep { // 圆锥曲面
-    const double l;  // Length
-    const double rt; // Radius 1
-    const double rb; // Radius 1
+    const double l;  // Length 高度
+    const double rt; // Radius 1 顶部半径
+    const double rb; // Radius 1 底部半径
     const double Tm; // GCode::Tool slope
 
   public:
-    ConicSweep(double length, double radius1, double radius2 = -1);
+    ConicSweep(double length, double radius1, double radius2 = -1); // 实例化圆锥曲面。
 
     // From Sweep
     void getBBoxes(const cb::Vector3D &start, const cb::Vector3D &end,
