@@ -26,13 +26,13 @@ using namespace std;
 using namespace cb;
 using namespace CAMotics;
 
-
-CutWorkpiece::CutWorkpiece(const SmartPointer<ToolSweep> &toolSweep,
+// 实现了CutWorkpiece类的成员函数。这个类表示一个被切割的工件，用来计算空间中的点到工件表面的距离。这个类继承了FieldFunction类，表示一个场函数。这个类的成员函数有以下功能：
+CutWorkpiece::CutWorkpiece(const SmartPointer<ToolSweep> &toolSweep, // 构造函数：接受一个ToolSweep对象的智能指针和一个Workpiece对象作为参数，用来初始化toolSweep和workpiece。ToolSweep对象表示一个工具扫过的形状，用来模拟切割过程。Workpiece对象表示一个原始的工件，是一个三维矩形。
                            const Workpiece &workpiece) :
   toolSweep(toolSweep), workpiece(workpiece) {}
 
 
-bool CutWorkpiece::isValid() const {
+bool CutWorkpiece::isValid() const { // isValid函数：判断工件是否有效，即是否有体积。如果workpiece是有效的，则返回false。否则，检查工件的边界矩形是否有非法的值，如NaN或Inf。如果有，则返回false。否则，返回true。
   if (workpiece.isValid()) return false;
 
   Rectangle3D bounds = getBounds();
@@ -45,7 +45,7 @@ bool CutWorkpiece::isValid() const {
 }
 
 
-Rectangle3D CutWorkpiece::getBounds() const {
+Rectangle3D CutWorkpiece::getBounds() const { // getBounds函数：返回工件的边界矩形。如果workpiece是有效的，则返回workpiece的边界矩形。否则，如果toolSweep不为空，则返回toolSweep的边界矩形。
   Rectangle3D bb;
   if (workpiece.isValid()) bb = workpiece.getBounds();
   else if (!toolSweep.isNull()) bb = toolSweep->getBounds();
@@ -53,12 +53,12 @@ Rectangle3D CutWorkpiece::getBounds() const {
 }
 
 
-bool CutWorkpiece::cull(const Rectangle3D &r) const {
+bool CutWorkpiece::cull(const Rectangle3D &r) const { // cull函数：重写了父类FieldFunction的虚函数，接受一个矩形作为参数，判断它是否与工件不相交。如果不相交，则返回true，表示可以剪除这个区域，提高计算效率。这个函数调用了toolSweep的cull函数进行判断。
   return toolSweep->cull(r);
 }
 
 
-double CutWorkpiece::depth(const Vector3D &p) const {
+double CutWorkpiece::depth(const Vector3D &p) const { // depth函数：重写了父类FieldFunction的虚函数，接受一个三维向量作为参数，表示一个空间中的点。这个函数返回这个点到工件表面最近的距离的平方，如果这个点在工件内部，则返回正值，否则返回负值。如果workpiece是无效的，则直接返回toolSweep的depth函数得到的结果。否则，返回workpiece和toolSweep的depth函数得到的结果中较小的一个。
   if (!workpiece.isValid()) return toolSweep->depth(p);
   return min(workpiece.depth(p), -toolSweep->depth(p));
 }

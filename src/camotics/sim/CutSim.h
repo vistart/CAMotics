@@ -32,18 +32,19 @@ namespace CAMotics {
   class Task;
 
 
-  class CutSim {
-    cb::SmartPointer<Task> task;
+  class CutSim { // 表示一个切割模拟器。这个类用来计算GCode的工具路径和表面，并对表面进行简化。这个类有以下特点：
+    cb::SmartPointer<Task> task; // 表示一个切割模拟器。这个类用来计算GCode的工具路径和表面，并对表面进行简化。这个类有以下特点：
 
   public:
-    CutSim();
-    ~CutSim();
+    CutSim(); // 构造函数，初始化task为空。
+    ~CutSim(); // 析构函数，释放task指向的内存。
 
     cb::SmartPointer<GCode::ToolPath>
-    computeToolPath(const Project::Project &project);
-    cb::SmartPointer<Surface> computeSurface(const Simulation &sim);
-    void reduceSurface(const cb::SmartPointer<Surface> &surface);
+    computeToolPath(const Project::Project &project); // computeToolPath方法，接受一个Project对象作为参数，返回一个GCode::ToolPath对象的智能指针。这个方法用来根据项目的设置和文件，计算出GCode的工具路径。
 
-    void interrupt();
+      cb::SmartPointer<Surface> computeSurface(const Simulation &sim); // computeSurface方法，接受一个Simulation对象作为参数，返回一个Surface对象的智能指针。这个方法用来根据模拟的参数和工具路径，计算出切割后的表面。
+    void reduceSurface(const cb::SmartPointer<Surface> &surface); // reduceSurface方法，接受一个Surface对象的智能指针作为参数。这个方法用来对表面进行简化，减少顶点和三角形的数量，提高渲染效率。
+
+    void interrupt() // interrupt方法，用来中断当前正在执行的任务。
   };
 }
