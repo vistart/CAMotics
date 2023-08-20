@@ -36,8 +36,8 @@ using namespace std;
 using namespace cb;
 using namespace CAMotics;
 
-
-ToolSweep::ToolSweep(const SmartPointer<GCode::ToolPath> &path,
+// 表示一个工具扫过的形状和移动的查找器，用来模拟切割过程。这个类继承了FieldFunction类和AABBTree类，分别表示一个空间中的场函数和一个轴对齐的包围盒树。这个类的各个方法的流程如下：
+ToolSweep::ToolSweep(const SmartPointer<GCode::ToolPath> &path, //  构造函数：接受一个GCode::ToolPath对象的智能指针和两个双精度浮点数作为参数，分别表示工具路径、起始时间和结束时间。这个函数用来初始化path、startTime、endTime，并根据path中的工具编号和工具表创建sweeps向量，并将其添加到AABBTree中。sweeps向量是一个Sweep对象的智能指针的向量，Sweep对象表示一个抽象的扫过形状，用来模拟切割过程。AABBTree是一个轴对齐的包围盒树，用来存储和查询空间中的对象。
                      double startTime, double endTime) :
   path(path), startTime(startTime), endTime(endTime) {
 
@@ -92,7 +92,7 @@ ToolSweep::ToolSweep(const SmartPointer<GCode::ToolPath> &path,
   LOG_DEBUG(1, "AABBTree boxes=" << boxes << " height=" << getHeight());
 }
 
-
+// cull方法：重写了父类FieldFunction的纯虚函数。这个方法接受一个矩形作为参数，表示空间中的一个区域。这个方法用来判断该区域是否与工具扫过的形状相交，如果不相交，则返回true，否则返回false。这个方法主要用来优化计算效率，避免不必要的深度计算。
 bool ToolSweep::cull(const Rectangle3D &r) const {
   if (change.isNull()) return false;
   return !change->intersects(r);
@@ -107,7 +107,7 @@ namespace {
   };
 }
 
-
+// depth方法：重写了父类FieldFunction的纯虚函数。这个方法接受一个三维向量作为参数，表示空间中的一点。这个方法用来计算该点到工具扫过的表面最近的距离的平方，如果该点在表面内部，则返回正值，否则返回负值。这个方法首先调用AABBTree中的collisions方法，找出与该点相交的移动指令，并按照时间顺序排序。然后遍历每个移动指令，并根据其工具编号和起止点，调用相应的Sweep对象中的depth方法，计算该点到该移动指令对应的扫过形状最近的距离。最后返回最大的距离值。
 double ToolSweep::depth(const Vector3D &p) const {
   vector<const GCode::Move *> moves;
   collisions(p, moves);
@@ -134,7 +134,7 @@ double ToolSweep::depth(const Vector3D &p) const {
   return d2;
 }
 
-
+// 静态方法getSweep：接受一个GCode::Tool对象作为参数。这个方法用来根据工具的形状创建并返回不同类型的Sweep对象。GCode::Tool对象表示一个工具，包含了编号、形状、半径、长度等信息。Sweep对象有多种子类，如ConicSweep、SpheroidSweep、CompositeSweep等，分别表示圆锥形、椭球形、复合形等扫过形状。
 SmartPointer<Sweep> ToolSweep::getSweep(const GCode::Tool &tool) {
   switch (tool.getShape()) {
   case GCode::ToolShape::TS_CYLINDRICAL:

@@ -25,14 +25,14 @@ using namespace cb;
 using namespace CAMotics;
 
 
-Workpiece::Workpiece(const Rectangle3D &r) :
-  Rectangle3D(r), center(r.getCenter()) {
+Workpiece::Workpiece(const Rectangle3D &r) : //表示一个工件。这个类继承了Rectangle3D类，表示一个三维矩形。这个类有以下特点：
+  Rectangle3D(r), center(r.getCenter()) { // 构造函数，接受一个Rectangle3D对象作为参数，用来初始化工件的位置和尺寸，并计算工件的中心点和半径的平方。
   Vector3D halfDim = r.getDimensions() / 2;
   halfDim2 = halfDim * halfDim;
 }
 
 
-double Workpiece::depth(const Vector3D &p) const {
+double Workpiece::depth(const Vector3D &p) const { // depth方法，接受一个Vector3D对象作为参数，表示一个空间中的点。这个方法返回这个点到工件表面最近的距离的平方，如果这个点在工件内部，则返回正值，否则返回负值。
   double d2 = p.distanceSquared(closestPointOnSurface(p));
   return Rectangle3D::contains(p) ? d2 : -d2;
 }

@@ -28,8 +28,8 @@ using namespace std;
 using namespace cb;
 using namespace CAMotics;
 
-
-SpheroidSweep::SpheroidSweep(double radius, double length) :
+// 实现了SpheroidSweep类的构造函数和depth方法。这个类表示一个椭球形的工具扫过的形状，用来模拟切割过程。这个类继承了Sweep类，表示一个抽象的扫过形状。这个类的构造函数和depth方法的流程如下：
+SpheroidSweep::SpheroidSweep(double radius, double length) : // 构造函数：接受两个双精度浮点数作为参数，分别表示工具的半径和长度。这个函数用来初始化radius和length，并根据长度计算scale和radius2。如果长度为负数，则表示工具是一个球形，否则表示工具是一个椭球形。如果工具是一个椭球形，则需要将球形沿着z轴缩放，以达到椭球形的效果。scale是一个三维向量，表示工具的缩放比例。radius2是一个双精度浮点数，表示工具的半径的平方，用来计算距离。
   radius(radius), length(length == -1 ? radius : length) {
 
   if (2 * radius != length) scale = Vector3D(1, 1, 2 * radius / length);
@@ -50,15 +50,16 @@ namespace {
 }
 
 
-double SpheroidSweep::depth(const Vector3D &_A, const Vector3D &_B,
+double SpheroidSweep::depth(const Vector3D &_A, const Vector3D &_B, // depth方法：接受三个三维向量作为参数。这个方法用来计算空间中的一点到工具扫过的表面最近的距离的平方，如果这个点在表面内部，则返回正值，否则返回负值。这个方法做了以下步骤：
                             const Vector3D &_P) const {
   const double r = radius;
-
+//首先，将参数向量赋值给局部变量A、B、P，分别表示工具移动的起始点、终止点和空间中的一点。
   Vector3D A = _A;
   Vector3D B = _B;
   Vector3D P = _P;
 
   // Handle oblong spheroids by scaling the z-axis
+  // 然后，判断工具是否是一个椭球形。如果是，则将A、B、P乘以scale，以达到椭球形的效果。
   if (2 * radius != length) {
     A *= scale;
     B *= scale;
@@ -66,9 +67,10 @@ double SpheroidSweep::depth(const Vector3D &_A, const Vector3D &_B,
   }
 
   // Check z-height
+  // 接着，判断P的z坐标是否在A和B的z坐标之间。如果不是，则返回-1，表示没有碰撞。
   if (P.z() < min(A.z(), B.z()) || max(A.z(), B.z()) + 2 * r < P.z())
     return -1;
-
+// 然后，计算AB、PA等向量，并根据一些公式计算出epsilon、gamma、rho、sigma等变量。这些变量用来求解二次方程，得到碰撞点在AB线段上的比例beta。
   const Vector3D AB = B - A;
   const Vector3D PA = A - P;
 
@@ -79,12 +81,13 @@ double SpheroidSweep::depth(const Vector3D &_A, const Vector3D &_B,
   const double sigma = sqr(gamma) - epsilon * rho;
 
   // Check if solution is valid
+  // 接着，判断方程是否有解，并且解是否在0到1之间。如果不是，则返回-1，表示没有碰撞。
   if (epsilon == 0 || sigma < 0) return -1;
 
   const double beta = (-gamma - sqrt(sigma)) / epsilon; // Quadradic equation
 
   // Check that it's on the line segment
   if (beta < 0 || 1 < beta) return -1;
-
+ // 最后，返回1，表示有碰撞。
   return 1;
 }

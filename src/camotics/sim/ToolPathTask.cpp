@@ -62,7 +62,7 @@ using namespace std;
 using namespace cb;
 using namespace CAMotics;
 
-
+// 构造函数：接受一个Project::Project对象和一个GCode::PlannerConfig对象作为参数。这两个函数用来根据项目中的配置和参数初始化tools、units、files、simJSON、pipeline、controller、path等成员变量，并根据config选择不同的规划器配置。Project::Project对象表示一个CAMotics项目，包含了一些文件和设置信息。GCode::PlannerConfig对象表示一个规划器配置，包含了一些控制移动速度和加速度的参数。
 ToolPathTask::ToolPathTask(const Project::Project &project,
                            const GCode::PlannerConfig *config) :
   tools(project.getTools()), units(project.getUnits()),
@@ -89,7 +89,7 @@ ToolPathTask::ToolPathTask(const Project::Project &project,
   pipeline.add(new GCode::MachineState);
 }
 
-
+// 析构函数：释放内存，并调用interrupt方法中断任务。
 ToolPathTask::~ToolPathTask() {interrupt();}
 
 
